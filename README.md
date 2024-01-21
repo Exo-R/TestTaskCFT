@@ -3,18 +3,22 @@
 
 Библиотеки (зависимости библиотек указаны в файле "pom.xml"):
 "commons-cli-1.4":
- !       <dependency>
- !           <groupId>commons-cli</groupId>
- !           <artifactId>commons-cli</artifactId>
- !           <version>1.4</version>
- !       </dependency>
+```
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.4</version>
+        </dependency>
+```
 "lombok-1.18.22":
+```
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
+```
 
 В папке "ApplicationRunning" имеются jar-файл "util.jar" и тестовые входные файлы.
 
