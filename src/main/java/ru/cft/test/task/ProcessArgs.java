@@ -38,8 +38,8 @@ public class ProcessArgs {
         try {
             CommandLine line = parser.parse(options, args);
 
-            String outPath = line.getOptionValue(OUTPUT_PATH_OPTION, "");             //как обработать если юзер не укажет второй арг
-            String prefixNameFile = line.getOptionValue(PREFIX_OPTION, "");       //как обработать если юзер не укажет второй арг
+            String outPath = line.getOptionValue(OUTPUT_PATH_OPTION, "");
+            String prefixNameFile = line.getOptionValue(PREFIX_OPTION, "");
             boolean isAppending = line.hasOption(APPEND_MODE_OPTION);
             boolean isShortStatistics = line.hasOption(SHORT_STATISTICS_OPTION);
             boolean isFullStatistics = line.hasOption(FULL_STATISTICS_OPTION);

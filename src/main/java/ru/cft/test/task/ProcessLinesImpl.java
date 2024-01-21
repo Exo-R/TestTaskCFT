@@ -8,7 +8,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,22 +23,20 @@ public class ProcessLinesImpl implements ProcessLines{
 
     @Override
     public void process(FilterArgs filterArgs) {
-//*
+
         String prefixNameOutfile = filterArgs.getPrefixFileName();
         String outfilePath = filterArgs.getOutFilePath();
         List<String> listInfileNames = filterArgs.getFileNames();
         boolean isAppending = filterArgs.isAppendModeWriter();
         StatisticsType statisticsType = filterArgs.getStatisticsType();
 
-        //if (!isCorrectPrefix(prefixNameOutfile))
-        //    throw new InvalidPrefixException("Error: the prefix contains invalid characters!");
         validatePrefix(prefixNameOutfile);
 
         String integerNameOutfile = prefixNameOutfile + INTEGER_NAME_FILE;
         String realNameOutfile = prefixNameOutfile + REAL_NAME_FILE;
         String stringNameOutfile = prefixNameOutfile + STRING_NAME_FILE;
 
-        outfilePath = pathChecking(outfilePath); // проверка на корректность вых. пути
+        outfilePath = pathChecking(outfilePath);
 
         Statistics statisticsInteger = new StatisticsInteger(statisticsType);
         Statistics statisticsReal = new StatisticsReal(statisticsType);
@@ -76,10 +77,9 @@ public class ProcessLinesImpl implements ProcessLines{
             statisticsString.printStatistics(stringNameOutfile);
         }
 
-        removeFile(outfilePath + integerNameOutfile); // как учесть пустой файл, который уже был создан ранее,
-        removeFile(outfilePath + realNameOutfile);    // но он не использовался в проге, т.е. нужно не удалять.
-        removeFile(outfilePath + stringNameOutfile);  // этот код его удалит
-
+        removeFile(outfilePath + integerNameOutfile);
+        removeFile(outfilePath + realNameOutfile);
+        removeFile(outfilePath + stringNameOutfile);
     }
 
     private void processFile(
@@ -92,33 +92,25 @@ public class ProcessLinesImpl implements ProcessLines{
             List<String> listInfileNames
     ) throws IOException {
 
-        BufferedReader[] readers = new BufferedReader[listInfileNames.size()];
-
-        //StringBuilder currentLine = new StringBuilder();
-
+        List<BufferedReader> readers = new ArrayList<>();
         try {
-            for (int i = 0; i < listInfileNames.size(); i++) {
-                readers[i] = new BufferedReader(new FileReader(listInfileNames.get(i)));
-                System.out.println("Reader[" + i + "] = " + readers[i].lines().count()); //delete
+
+            Queue<BufferedReader> queue = new LinkedList<>();
+            for (String listInfileName : listInfileNames) {
+                BufferedReader reader = new BufferedReader(new FileReader(listInfileName));
+                queue.add(reader);
+                readers.add(reader);
             }
-            boolean isEmptyFiles = true;
 
-            while (isEmptyFiles) {
+            while (!queue.isEmpty()) {
 
-                isEmptyFiles = false;
+                BufferedReader currentReader = queue.poll();
 
-                for (int i = 0; i < listInfileNames.size(); i++) {
+                String currentLine = currentReader.readLine();
+                if (currentLine != null) {
+                    queue.add(currentReader);
 
-                    //String currentSymbols = readers[i].read();
-                    String currentLine = String.valueOf(readers[i].read());
-
-
-                    //System.out.println("listInfileNames: " + listInfileNames.get(i));
-                    System.out.println(currentLine);
-
-                    if (currentLine != null && !currentLine.trim().isEmpty()) {
-                        currentLine = currentLine.trim();
-
+                    if (!currentLine.trim().isEmpty()) {
                         if (isInteger(currentLine)) {
                             integerWriter.write(currentLine);
                             integerWriter.newLine();
@@ -132,22 +124,18 @@ public class ProcessLinesImpl implements ProcessLines{
                             stringWriter.newLine();
                             stringStatistics.addValue(currentLine);
                         }
-
-                        isEmptyFiles = true;
                     }
                 }
             }
-
         } catch (IOException exception) {
 
             System.err.println("Error reading file:");
             System.err.println(exception.getMessage());
 
         } finally {
-
-            for (BufferedReader reader : readers)
-                if (reader != null)
-                    reader.close();
+            for (BufferedReader reader : readers) {
+                reader.close();
+            }
         }
     }
 
@@ -155,8 +143,6 @@ public class ProcessLinesImpl implements ProcessLines{
 
         if(!outfilePath.isEmpty()) {
 
-            //if (!isCorrectOutfilePath(outfilePath))
-            //    throw new InvalidPathException("Error: the outfile path contains invalid characters!");
             validateOutfilePath(outfilePath);
 
             if (!Paths.get(outfilePath).isAbsolute()) {
@@ -212,7 +198,7 @@ public class ProcessLinesImpl implements ProcessLines{
     }
 
     private void validateOutfilePath(String outfilePath) {
-        String regex = "^([a-zA-Z]:\\\\)?[^*:?<>|\"]*"; // убрано 2 знака: / \
+        String regex = "^([a-zA-Z]:\\\\)?[^*:?<>|\"]*";
         if (!regexMatch(regex, outfilePath)) {
             throw new InvalidPathException("Error: the outfile path contains invalid characters!");
         }
