@@ -1,0 +1,14 @@
+ru\cft\test\task\MainClass.class
+ru\cft\test\task\Exception\InvalidArgsException.class
+ru\cft\test\task\Statistics\StatisticsString.class
+ru\cft\test\task\Statistics\StatisticsReal.class
+ru\cft\test\task\Statistics\StatisticsType.class
+ru\cft\test\task\FilterArgs.class
+ru\cft\test\task\ProcessLines.class
+ru\cft\test\task\ProcessArgs.class
+ru\cft\test\task\ProcessLinesImpl.class
+ru\cft\test\task\Statistics\Statistics.class
+ru\cft\test\task\Exception\InvalidPrefixException.class
+ru\cft\test\task\Exception\StatisticsTypeException.class
+ru\cft\test\task\Statistics\StatisticsInteger.class
+ru\cft\test\task\Exception\InvalidPathException.class
